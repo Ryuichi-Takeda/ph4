@@ -1,5 +1,10 @@
 function setup() {
     createCanvas(400, 400);
+    for (let i = 0; i < 2; i++) {
+        let p = new Vec2(90 * (i % 4) + 50, 50 * floor(i / 4) )
+        let v= new Vec2(720, -180)
+        balls.push(new Ball(p,v, 15));
+      }
     for (let i = 0; i < 12; i++) {
       let p = new Vec2(90 * (i % 4) + 50, 50 * floor(i / 4) + 50);
       blocks.push(new Block(p, 20));
@@ -72,6 +77,7 @@ function setup() {
   let paddle = new Paddle(new Vec2(200, 320), 30);
   
   function draw() {
+    for (let ball of balls){
     ball.p = ball.p.add(ball.v.mul(1 / 60));
   
     if (ball.p.x > 385 || ball.p.x < 15) {
@@ -99,12 +105,13 @@ function setup() {
       ball.v = r;
       ball.p = paddle.p.add(w.norm().mul(ball.r + paddle.r));
     }
-  
+}
     paddle.p.x = mouseX;
   
     background(220);
-    circle(ball.p.x, ball.p.y, 2 * ball.r);
-  
+    for (let ball of balls) {
+        circle(ball.p.x, ball.p.y, 2 * ball.r);
+      }  
     for (let b of blocks) {
       circle(b.p.x, b.p.y, 2 * b.r);
     }
