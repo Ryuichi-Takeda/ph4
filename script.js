@@ -1,93 +1,97 @@
 function setup() {
-    createCanvas(400, 400);
-    for (let i = 0; i < 2; i++) {
-        let p = new Vec2(90 * (i % 4) + 50, 50 * floor(i / 4) )
-        let v= new Vec2(720, -180)
-        balls.push(new Ball(p,v, 15));
-      }
-    for (let i = 0; i < 12; i++) {
-      let p = new Vec2(90 * (i % 4) + 50, 50 * floor(i / 4) + 50);
-      blocks.push(new Block(p, 20));
-    }
+  createCanvas(400, 400);
+  let min_ball_number = 2;
+  let max_ball_number = 5;
+  let ball_number = Math.random() * ( max_ball_number - min_ball_number ) + min_ball_number;
+  for (let i = 0; i < ball_number; i++) {
+    let p = new Vec2(90 * (i % 3) + 50, 50 * floor(i / 3) + 300);
+    let v = new Vec2(720, -180);
+    balls.push(new Ball(p, v, 15));
   }
-  
-  class Vec2 {
-    constructor(_x, _y) {
-      this.x = _x;
-      this.y = _y;
-    }
-    add(b) {
-      let a = this;
-      return new Vec2(a.x + b.x, a.y + b.y);
-    }
-    mul(s) {
-      let a = this;
-      return new Vec2(s * a.x, s * a.y);
-    }
-    mag() {
-      let a = this;
-      return sqrt(a.x ** 2 + a.y ** 2);
-    }
-    sub(b) {
-      let a = this;
-      return new Vec2(a.x - b.x, a.y - b.y);
-    }
-    norm() {
-      let a = this;
-      return a.mul(1 / a.mag());
-    }
-    dot(b) {
-      let a = this;
-      return a.x * b.x + a.y * b.y;
-    }
-    reflect(w) {
-      let v = ball.v;
-      let cosTheta = v.mul(-1).dot(w) / (v.mul(-1).mag() * w.mag());
-      let n = w.norm().mul(v.mag() * cosTheta);
-      let r = v.add(n.mul(2));
-      return r;
-    }
+  block_number = 12;
+  for (let i = 0; i < block_number; i++) {
+    let p = new Vec2(90 * (i % 4) + 50, 50 * floor(i / 4) + 50);
+    blocks.push(new Block(p, 20));
   }
-  
-  class Ball {
-    constructor(_p, _v, _r) {
-      this.p = _p;
-      this.v = _v;
-      this.r = _r;
-    }
+}
+
+class Vec2 {
+  constructor(_x, _y) {
+    this.x = _x;
+    this.y = _y;
   }
-  
-  class Block {
-    constructor(_p, _r) {
-      this.p = _p;
-      this.r = _r;
-    }
+  add(b) {
+    let a = this;
+    return new Vec2(a.x + b.x, a.y + b.y);
   }
-  class Paddle {
-    constructor(_p, _r) {
-      this.p = _p;
-      this.r = _r;
-    }
+  mul(s) {
+    let a = this;
+    return new Vec2(s * a.x, s * a.y);
   }
-  
-  let balls = new Ball(new Vec2(200, 300), new Vec2(720, -180), 15);
-  
-  let blocks = [];
-  
-  let paddle = new Paddle(new Vec2(200, 320), 30);
-  
-  function draw() {
-    for (let ball of balls){
+  mag() {
+    let a = this;
+    return sqrt(a.x ** 2 + a.y ** 2);
+  }
+  sub(b) {
+    let a = this;
+    return new Vec2(a.x - b.x, a.y - b.y);
+  }
+  norm() {
+    let a = this;
+    return a.mul(1 / a.mag());
+  }
+  dot(b) {
+    let a = this;
+    return a.x * b.x + a.y * b.y;
+  }
+  reflect(w) {
+    let v = this;
+    let cosTheta = v.mul(-1).dot(w) / (v.mul(-1).mag() * w.mag());
+    let n = w.norm().mul(v.mag() * cosTheta);
+    let r = v.add(n.mul(2));
+    return r;
+  }
+}
+
+class Ball {
+  constructor(_p, _v, _r) {
+    this.p = _p;
+    this.v = _v;
+    this.r = _r;
+  }
+}
+
+class Block {
+  constructor(_p, _r) {
+    this.p = _p;
+    this.r = _r;
+  }
+}
+class Paddle {
+  constructor(_p, _r) {
+    this.p = _p;
+    this.r = _r;
+  }
+}
+
+let balls = [];
+
+let blocks = [];
+
+let paddle = new Paddle(new Vec2(200, 320), 30);
+
+function draw() {
+  for (let ball of balls) {
     ball.p = ball.p.add(ball.v.mul(1 / 60));
-  
+
     if (ball.p.x > 385 || ball.p.x < 15) {
       ball.v.x *= -1;
     }
-  
+
     if (ball.p.y > 385 || ball.p.y < 15) {
       ball.v.y *= -1;
     }
-  
+
     for (let block of blocks) {
       let d = block.p.sub(ball.p).mag();
       if (d < ball.r + block.r) {
@@ -97,7 +101,7 @@ function setup() {
         blocks.splice(blocks.indexOf(block), 1);
       }
     }
-  
+
     let d = paddle.p.sub(ball.p).mag();
     if (d < ball.r + paddle.r) {
       let w = ball.p.sub(paddle.p);
@@ -105,15 +109,15 @@ function setup() {
       ball.v = r;
       ball.p = paddle.p.add(w.norm().mul(ball.r + paddle.r));
     }
-}
-    paddle.p.x = mouseX;
-  
-    background(220);
-    for (let ball of balls) {
-        circle(ball.p.x, ball.p.y, 2 * ball.r);
-      }  
-    for (let b of blocks) {
-      circle(b.p.x, b.p.y, 2 * b.r);
-    }
-    circle(paddle.p.x, paddle.p.y, 2 * paddle.r);
   }
+  paddle.p.x = mouseX;
+
+  background(220);
+  for (let ball of balls) {
+    circle(ball.p.x, ball.p.y, 2 * ball.r);
+  }
+  for (let b of blocks) {
+    circle(b.p.x, b.p.y, 2 * b.r);
+  }
+  circle(paddle.p.x, paddle.p.y, 2 * paddle.r);
+}
