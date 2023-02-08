@@ -1,8 +1,9 @@
 function setup() {
   createCanvas(400, 400);
-  let min_ball_number = 2;
-  let max_ball_number = 5;
-  let ball_number = Math.random() * ( max_ball_number - min_ball_number ) + min_ball_number;
+  let min_ball_number = 12;
+  let max_ball_number = 12;
+  let ball_number =
+    Math.random() * (max_ball_number - min_ball_number) + min_ball_number;
   for (let i = 0; i < ball_number; i++) {
     let p = new Vec2(90 * (i % 3) + 50, 50 * floor(i / 3) + 300);
     let v = new Vec2(720, -180);
@@ -99,6 +100,9 @@ function draw() {
         let r = ball.v.reflect(w);
         ball.v = r;
         blocks.splice(blocks.indexOf(block), 1);
+        if (blocks.length == 0) {
+          balls = [];
+        }
       }
     }
 
